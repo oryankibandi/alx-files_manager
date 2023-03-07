@@ -9,12 +9,11 @@ module.exports = {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
   },
-  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint', 'jest'],
+  plugins: ['jest'],
   rules: {
     'max-classes-per-file': 'off',
     'no-underscore-dangle': 'off',
@@ -24,7 +23,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['*.js', '*.ts'],
+      files: ['*.js'],
       excludedFiles: 'babel.config.js',
     },
   ],

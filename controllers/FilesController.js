@@ -1,10 +1,15 @@
+/* eslint-disable object-curly-newline */
+/* eslint-disable no-unused-vars */
+/* eslint-disable consistent-return */
+/* eslint-disable curly */
+/* eslint-disable nonblock-statement-body-position */
 import fs from 'node:fs';
-
-const { ObjectId } = require('mongodb');
 import { v4 as uuidv4 } from 'uuid';
 
 import DBClient from '../utils/db';
 import RedisClient from '../utils/redis';
+
+const { ObjectId } = require('mongodb');
 
 class FilesController {
   static async postUpload(request, response) {
@@ -39,7 +44,7 @@ class FilesController {
     if (parentId) {
       const parentFolder = await DBClient.database
         .collection('files')
-        .findOne({ _id: ObjectId(prentId) });
+        .findOne({ _id: ObjectId(parentId) });
       if (!parentFolder)
         return response.status(400).send({ error: 'Parent is not a folder' });
       if (parentFolder.type !== 'folder') {
@@ -61,37 +66,36 @@ class FilesController {
         isPublic: dataAdded.isPublic,
         parentId: dataAdded.parentId,
       });
-    } else {
-      const path = process.env.FOLDER_PATH || '/tmp/files_manager';
-      const fileNewId = uuidv4();
-
-      const buff = Buffer.from(fileData, 'base64');
-      const pathFile = `${path}/${fileNewId}`;
-
-      await fs.mkdir(pathDir, { recursive: true }, (error) => {
-        if (error) return response.status(400).send({ error: error.message });
-        return true;
-      });
-
-      await fs.writeFile(pathFile, buff, (error) => {
-        if (error) return response.status(400).send({ error: error.message });
-        return true;
-      });
-
-      fileData.localPath = pathFile;
-      const createdData = await DBClient.database
-        .collection('files')
-        .insertOne({ ...fileData });
-
-      return response.status(201).send({
-        id: createdData._id,
-        userId: createdData.userId,
-        name: createdData.name,
-        type: createdData.type,
-        isPublic: createdData.isPublic,
-        parentId: createdData.parentId,
-      });
     }
+    const path = process.env.FOLDER_PATH || '/tmp/files_manager';
+    const fileNewId = uuidv4();
+
+    const buff = Buffer.from(fileData, 'base64');
+    const pathFile = `${path}/${fileNewId}`;
+
+    await fs.mkdir(pathFile, { recursive: true }, (error) => {
+      if (error) return response.status(400).send({ error: error.message });
+      return true;
+    });
+
+    await fs.writeFile(pathFile, buff, (error) => {
+      if (error) return response.status(400).send({ error: error.message });
+      return true;
+    });
+
+    fileData.localPath = pathFile;
+    const createdData = await DBClient.database
+      .collection('files')
+      .insertOne({ ...fileData });
+
+    return response.status(201).send({
+      id: createdData._id,
+      userId: createdData.userId,
+      name: createdData.name,
+      type: createdData.type,
+      isPublic: createdData.isPublic,
+      parentId: createdData.parentId,
+    });
   }
 
   static async getShow(req, res) {
@@ -123,7 +127,7 @@ class FilesController {
     });
   }
 
-  static async getIndex() {
+  static async getIndex(req, res) {
     const token = req.header('X-Token') || null;
     if (!token) return res.status(401).send({ error: 'Unauthorized' });
 
@@ -136,7 +140,7 @@ class FilesController {
     if (!user) return res.status(401).send({ error: 'Unauthorized' });
   }
 
-  static async putPublish() {
+  static async putPublish(req, res) {
     const token = req.header('X-Token') || null;
     if (!token) return res.status(401).send({ error: 'Unauthorized' });
 
@@ -149,7 +153,7 @@ class FilesController {
     if (!user) return res.status(401).send({ error: 'Unauthorized' });
   }
 
-  static async putUnpublish() {
+  static async putUnpublish(req, res) {
     const token = req.header('X-Token') || null;
     if (!token) return res.status(401).send({ error: 'Unauthorized' });
 

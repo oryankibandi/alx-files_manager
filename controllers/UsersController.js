@@ -1,3 +1,5 @@
+/* eslint-disable curly */
+/* eslint-disable nonblock-statement-body-position */
 import sha1 from 'sha1';
 import DBClient from '../utils/db';
 import RedisClient from '../utils/redis';

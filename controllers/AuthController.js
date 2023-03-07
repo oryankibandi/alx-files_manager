@@ -14,7 +14,9 @@ class AuthController {
       password: buff.toString('utf8').split(':')[1],
     };
     creds.password = sha1(creds.password);
+    // eslint-disable-next-line curly
     if (!creds.email || !creds.password)
+      // eslint-disable-next-line nonblock-statement-body-position
       return response.status(401).send({ error: 'Unauthorized' });
 
     const getUser = await DBClient.db.collection('users').findOne(creds);
