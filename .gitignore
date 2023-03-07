@@ -4,3 +4,6 @@
 # .env files
 .env
 *.env
+
+# .vscode config files
+/.vscode/
